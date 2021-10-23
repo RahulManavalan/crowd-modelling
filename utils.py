@@ -2,6 +2,7 @@ from os import closerange
 import numpy as np
 import re
 import matplotlib.pyplot as plt
+from type import Type
 
 def parse_elem(elem:str)->int:     
     if(elem=='e'): 
@@ -29,8 +30,39 @@ def parse_file(filename:str)->np.ndarray.dtype:
             array[i,j] = parse_elem(elem);
     return array;
 
-def parse_tensor_file(filename:str):
-    return 
+def find_neighbour(i:int,j:int,xmax:int,ymax:int):
+    neighbour = [];
+    if(i==0 and j==0): 
+        neighbour += [(i,j+1),(i+1,j+1),(i+1,j)];
+    elif(i==xmax-1 and j==0): 
+        neighbour+=[(i,j+1),(i-1,j),(i-1,j+1)];
+    elif(i==0 and j==ymax-1): 
+        neighbour+=[(i+1,j),(i+1,j-1),(i,j-1)];
+    elif(i==xmax-1 and j==ymax-1):
+        neighbour+=[(i,j-1),(i-1,j-1),(i-1,j)];
+    elif(i==0): 
+        neighbour+=[(i,j+1),(i+1,j+1),(i+1,j),(i+1,j-1),(i,j-1)];
+    elif(i==xmax-1): 
+        neighbour+=[(i,j+1),(i,j-1),(i-1,j-1),(i-1,j),(i-1,j+1)];
+    elif(j==0):
+        neighbour+=[(i,j+1),(i+1,j+1),(i+1,j),(i-1,j),(i-1,j+1)]; 
+    elif(j==ymax-1):
+        neighbour+=[(i+1,j),(i+1,j-1),(i,j-1),(i-1,j-1),(i-1,j)]; 
+    else: 
+        neighbour+=[(i,j+1),(i+1,j+1),(i+1,j),(i+1,j-1),(i,j-1),(i-1,j-1),(i-1,j),(i-1,j+1)];  
+    return neighbour
+
+def find_state(char:np.float64): 
+    if(char==0):
+        return Type.Empty;
+    elif(char==1): 
+        return Type.Pedestrian; 
+    elif(char==2): 
+        return Type.Obstacle;
+    elif(char==3):
+        return Type.Target;
+    else:  
+        RuntimeError("Invalid character used in __find_state__");
 
 def visualize(grid:np.ndarray.dtype):
     dims = grid.shape; 
